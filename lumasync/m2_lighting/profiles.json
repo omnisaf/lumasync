@@ -1,0 +1,48 @@
+{
+  "_comment": "Fixture profiles: the channel layout of one light model in one DMX mode. Channel names M2 understands: dimmer, red, green, blue, white, amber, lime, uv, strobe, program, speed, cto, unused. Channels in 'fixed' are always sent at that value (used to hold strobe / built-in programs OFF). 'verified': false means nobody has confirmed this map on a real unit with tools/dmx_test.py walk.",
+  "generic_rgb_3ch": {
+    "name": "Generic RGB par, 3-channel",
+    "verified": false,
+    "channels": ["red", "green", "blue"],
+    "fixed": {},
+    "dimmer_gamma": 2.2,
+    "white_mode": "off",
+    "notes": "Cheapest LED pars and LED-strip pixels (WLED). Brightness goes into the colour channels."
+  },
+  "generic_drgb_4ch": {
+    "name": "Generic dimmer + RGB par, 4-channel",
+    "verified": false,
+    "channels": ["dimmer", "red", "green", "blue"],
+    "fixed": {},
+    "dimmer_gamma": 2.2,
+    "white_mode": "off",
+    "notes": "Common 4-channel mode on budget pars."
+  },
+  "betopper_lpc1818_7ch_guess": {
+    "name": "Betopper LPC1818, 7-channel (GUESS)",
+    "verified": false,
+    "channels": ["dimmer", "red", "green", "blue", "white", "strobe", "program"],
+    "fixed": {"strobe": 0, "program": 0},
+    "dimmer_gamma": 2.2,
+    "white_mode": "off",
+    "notes": "UNVERIFIED first guess: dimmer, R, G, B, W(?), strobe, program. The manual v6.0 for the upgraded LPC1818 says its 7-ch mode is R, G, B, Lime, Amber, UV, CTO instead (see betopper_lpc1818_7ch_manual and docs/research/dmx-path.md). Confirm with tools/dmx_test.py walk --start 1 --count 7 before trusting either."
+  },
+  "betopper_lpc1818_7ch_manual": {
+    "name": "Betopper LPC1818 (upgraded), 7-channel per manual v6.0",
+    "verified": false,
+    "channels": ["red", "green", "blue", "lime", "amber", "uv", "cto"],
+    "fixed": {"lime": 0, "amber": 0, "uv": 0, "cto": 0},
+    "dimmer_gamma": 2.2,
+    "white_mode": "off",
+    "notes": "From the manual (display shows d001 in this mode). No master dimmer: brightness goes into R, G, B. UNVERIFIED on our units."
+  },
+  "betopper_lpc1818_11ch_manual": {
+    "name": "Betopper LPC1818 (upgraded), 11-channel per manual v6.0",
+    "verified": false,
+    "channels": ["dimmer", "red", "green", "blue", "lime", "amber", "uv", "strobe", "program", "speed", "cto"],
+    "fixed": {"lime": 0, "amber": 0, "uv": 0, "strobe": 0, "program": 0, "speed": 0, "cto": 0},
+    "dimmer_gamma": 2.2,
+    "white_mode": "off",
+    "notes": "From the manual (display shows A001). Channel 9 (program) MUST stay 0-50 or the light runs its own programs. At the venue's 10-channel address spacing this mode overlaps the next light by one channel. UNVERIFIED on our units."
+  }
+}

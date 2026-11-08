@@ -1,0 +1,45 @@
+{
+  "songs": [
+    {
+      "song_id": "demo_neon_drive",
+      "title": "Neon Drive (demo)",
+      "artist": "LumaSync synthetic",
+      "palette": [
+        "#ff2a6d",
+        "#05d9e8",
+        "#7b2fff"
+      ],
+      "energy": 0.85,
+      "strobe": true,
+      "blend": null,
+      "audio_file": "library/audio/demo_neon_drive.wav"
+    },
+    {
+      "song_id": "demo_slow_bloom",
+      "title": "Slow Bloom (demo)",
+      "artist": "LumaSync synthetic",
+      "palette": [
+        "#ffb347",
+        "#ff6f91",
+        "#ffd1a1"
+      ],
+      "energy": 0.35,
+      "strobe": false,
+      "blend": 0.9,
+      "audio_file": "library/audio/demo_slow_bloom.wav"
+    },
+    {
+      "song_id": "demo_breakbeat_140",
+      "title": "Breakbeat 140 (demo)",
+      "artist": "LumaSync synthetic",
+      "palette": [
+        "#39ff14",
+        "#00b3ff"
+      ],
+      "energy": 0.95,
+      "strobe": true,
+      "blend": null,
+      "audio_file": "library/audio/demo_breakbeat_140.wav"
+    }
+  ]
+}

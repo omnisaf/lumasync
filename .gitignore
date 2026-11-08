@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+library/audio/
+recordings/
+library/index/
+library/songs.json.tmp
+.pytest_cache/

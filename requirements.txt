@@ -1,0 +1,8 @@
+# LumaSync prototype. Python 3.11+ (developed on 3.14, macOS).
+numpy>=2.0          # all DSP
+scipy>=1.13         # resampling, peak finding (fingerprints), filters for synthetic demo audio
+sounddevice>=0.4.6  # mic / line-in input and speaker playback (PortAudio, wheel bundles it on macOS)
+soundfile>=0.12     # reading wav / flac / mp3 (libsndfile, wheel bundles it on macOS)
+pyserial>=3.5       # FTDI USB-to-DMX cable
+websockets>=14.0    # web UI: page + live WebSocket on one port
+pytest>=8.0         # tests

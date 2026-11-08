@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LumaSync</title>
+<style>
+:root{
+  --bg:#0a0c11; --panel:#11141b; --panel2:#161a23; --line:#232937; --text:#e7eaf0; --muted:#8b93a7; --faint:#5b6377;
+  --accent:#8b6cff; --accent2:#3ec6ff; --ok:#33d17a; --warn:#f5b041; --bad:#ff5468;
+  --r:12px; --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid var(--line);background:#0c0f15;position:sticky;top:0;z-index:5}
+.logo{font-weight:700;font-size:20px;letter-spacing:.3px}
+.logo span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);font-size:13px}
+.pills{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--muted);background:var(--panel)}
+.pill b{color:var(--text);font-weight:600}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--faint);margin-right:6px;vertical-align:middle}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+main{padding:18px 22px;display:grid;grid-template-columns:repeat(12,1fr);gap:16px;max-width:1500px;margin:0 auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.panel h2{margin:0 0 10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
+.panel h2 .tag{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint)}
+.c12{grid-column:span 12}.c8{grid-column:span 8}.c7{grid-column:span 7}.c6{grid-column:span 6}.c5{grid-column:span 5}.c4{grid-column:span 4}.c3{grid-column:span 3}
+@media (max-width:1100px){.c8,.c7,.c6,.c5,.c4,.c3{grid-column:span 12}}
+/* stage */
+.stage{display:flex;justify-content:space-around;align-items:flex-end;gap:10px;padding:26px 6px 10px;background:radial-gradient(ellipse at 50% 120%,#1a1f2b 0,#0b0d12 70%);border-radius:10px;min-height:170px}
+.fx{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;min-width:0}
+.lamp{width:min(78px,10vw);aspect-ratio:1;border-radius:50%;background:#000;border:2px solid #2a3040;transition:none}
+.fx small{color:var(--faint);font-size:11px;font-family:var(--mono);white-space:nowrap}
+.layerline{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.cap{padding:2px 8px;border-radius:6px;font-weight:600;font-size:11px;background:#1d2a20;color:var(--ok)}
+.cap.on{background:#3a1820;color:var(--bad)}
+/* module map */
+svg text{font-family:system-ui,-apple-system,sans-serif}
+.mm-box{fill:#151a24;stroke:#2a3142;stroke-width:1.2}
+.mm-box.live{stroke:#3b4660}
+.mm-title{fill:var(--text);font-size:13px;font-weight:600}
+.mm-own{fill:var(--faint);font-size:10px}
+.mm-sum{fill:var(--muted);font-size:10.5px;font-family:var(--mono)}
+.mm-ms{fill:var(--accent2);font-size:10px;font-family:var(--mono)}
+.mm-arrow{stroke:#3a4458;stroke-width:1.6;fill:none;marker-end:url(#arr)}
+.mm-flow{stroke:var(--accent);stroke-width:1.6;fill:none;stroke-dasharray:4 10;animation:flow 1.2s linear infinite;opacity:.7}
+@keyframes flow{to{stroke-dashoffset:-28}}
+.mm-in{fill:#10141c;stroke:#2a3142;stroke-dasharray:3 3}
+/* meters */
+.bars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:110px}
+.bar{background:#0d1017;border:1px solid var(--line);border-radius:6px;height:100%;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,var(--accent),var(--accent2));height:0}
+.barlbl{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:4px;text-align:center;color:var(--faint);font-size:11px}
+canvas{width:100%;display:block}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin-top:10px}
+.kv span:nth-child(odd){color:var(--muted)}
+.kv span:nth-child(even){font-family:var(--mono)}
+.hbar{height:8px;background:#0d1017;border:1px solid var(--line);border-radius:5px;overflow:hidden;position:relative}
+.hbar i{position:absolute;top:0;bottom:0;left:0;background:var(--accent);width:0}
+.hbar.center i{left:50%}
+.big{font-size:44px;font-weight:700;font-family:var(--mono);letter-spacing:-1px;line-height:1}
+.big small{font-size:14px;color:var(--muted);font-weight:500;letter-spacing:0;margin-left:6px}
+.row{display:flex;align-items:center;gap:14px}
+.beat{width:40px;height:40px;border-radius:50%;background:#1a1f2b;border:1px solid var(--line);transition:background .25s ease}
+.beat.on{background:var(--accent);transition:none;box-shadow:0 0 22px var(--accent)}
+.flag{padding:3px 9px;border-radius:6px;font-size:12px;font-weight:700;background:#1a1f2b;color:var(--faint);transition:all .6s}
+.flag.on{background:var(--warn);color:#111;transition:none}
+.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;border:1px solid var(--line);color:var(--muted)}
+.chip.locked,.chip.manual{border-color:var(--ok);color:var(--ok)} .chip.candidate,.chip.holding{border-color:var(--warn);color:var(--warn)}
+.songname{font-size:20px;font-weight:600;margin:4px 0 6px;min-height:28px}
+.mood{width:100%;height:150px;background:#0d1017;border:1px solid var(--line);border-radius:8px;position:relative;margin-top:8px}
+.mood:before,.mood:after{content:"";position:absolute;background:var(--line)}
+.mood:before{left:50%;top:0;bottom:0;width:1px}.mood:after{top:50%;left:0;right:0;height:1px}
+.mood b{position:absolute;width:14px;height:14px;margin:-7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 12px var(--accent2);transition:all .3s}
+.mood em{position:absolute;font-size:10px;color:var(--faint);font-style:normal}
+.note{font-size:11px;color:var(--faint);margin-top:6px}
+.swatches{display:flex;gap:6px}
+.sw{width:26px;height:26px;border-radius:6px;border:1px solid #0006}
+/* latency */
+.lat{display:grid;grid-template-columns:170px 1fr 64px;gap:6px 10px;align-items:center;font-size:12.5px}
+.lat .hbar i{background:var(--accent2)}
+.lat .v{font-family:var(--mono);text-align:right;color:var(--muted)}
+.total{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap;align-items:baseline}
+.total .big{font-size:30px}
+/* controls */
+label.ctl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:10px;margin:8px 0;color:var(--muted)}
+label.ctl output{font-family:var(--mono);color:var(--text);text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+button,select,input[type=text]{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 12px}
+button{cursor:pointer}
+button:hover{border-color:#3a4458}
+button.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.danger{background:#2a1218;border-color:#5a2230;color:#ff8a98;font-weight:700}
+button.danger.sel{background:var(--bad);color:#fff;border-color:var(--bad)}
+button.toggle.sel{background:#203a2a;border-color:var(--ok);color:var(--ok)}
+select,input[type=text]{width:100%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:12px;margin:6px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--faint);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:6px}
+td{padding:7px 6px;border-top:1px solid var(--line);vertical-align:middle}
+td .mini{font-size:11px;color:var(--faint)}
+.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.dmx{display:grid;grid-template-columns:repeat(18,1fr);gap:3px;font-family:var(--mono);font-size:10px}
+.dmx div{background:#0d1017;border:1px solid var(--line);border-radius:4px;padding:3px 0;text-align:center;color:var(--faint);position:relative}
+.dmx div.hot{color:var(--text)}
+.dmx div.start{border-left:2px solid var(--accent)}
+.err{color:var(--bad);font-size:12px;margin-top:6px;min-height:16px}
+.prog{height:6px;background:#0d1017;border-radius:4px;overflow:hidden;margin-top:6px}.prog i{display:block;height:100%;width:0;background:var(--ok)}
+#conn{position:fixed;bottom:14px;right:14px;background:var(--bad);color:#fff;padding:8px 14px;border-radius:8px;display:none;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="logo"><span>LumaSync</span></div><div class="sub">music-reactive lighting · 4OI6 capstone prototype</div></div>
+  <div class="pills">
+    <div class="pill"><span class="dot" id="pSrcDot"></span>input <b id="pSrc">–</b></div>
+    <div class="pill"><span class="dot" id="pDmxDot"></span>DMX <b id="pDmx">–</b></div>
+    <div class="pill">engine <b id="pFps">–</b> ticks/s</div>
+    <div class="pill">contract <b id="pVer">–</b></div>
+  </div>
+</header>
+
+<main>
+  <section class="panel c6">
+    <h2>Stage preview <span class="tag" id="fxCount"></span></h2>
+    <div class="stage" id="stage"></div>
+    <div class="layerline"><span>layers: <b id="layers" style="color:var(--text)">–</b></span><span class="cap" id="cap">safety cap: idle</span></div>
+  </section>
+
+  <section class="panel c6">
+    <h2>Module map <span class="tag">live status · only contract types cross the arrows</span></h2>
+    <svg viewBox="0 0 700 300" width="100%" id="mm">
+      <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#3a4458"/></marker></defs>
+      <path class="mm-arrow" d="M150,150 C170,150 170,55 188,55"/><path class="mm-flow" d="M150,150 C170,150 170,55 188,55"/>
+      <path class="mm-arrow" d="M150,150 C170,150 170,245 188,245"/><path class="mm-flow" d="M150,150 C170,150 170,245 188,245"/>
+      <path class="mm-arrow" d="M340,55 C360,55 360,150 378,150"/><path class="mm-flow" d="M340,55 C360,55 360,150 378,150"/>
+      <path class="mm-arrow" d="M340,245 C360,245 360,150 378,150"/><path class="mm-flow" d="M340,245 C360,245 360,150 378,150"/>
+      <path class="mm-arrow" d="M455,40 L455,113"/>
+      <path class="mm-arrow" d="M455,262 L455,187"/>
+      <path class="mm-arrow" d="M405,280 C370,292 330,292 300,282" stroke-dasharray="3 3"/>
+      <path class="mm-arrow" d="M530,150 L558,150"/><path class="mm-flow" d="M530,150 L558,150"/>
+      <text x="100" y="98" class="mm-own">AudioFrame</text>
+      <text x="350" y="94" class="mm-own">RhythmState</text>
+      <text x="350" y="212" class="mm-own">MusicContext</text>
+      <text x="532" y="140" class="mm-own">LightIntent</text>
+      <text x="327" y="300" class="mm-own">fingerprints</text>
+      <rect x="400" y="12" width="110" height="28" rx="7" class="mm-in"/><text x="455" y="30" text-anchor="middle" class="mm-own">LiveControls (UI)</text>
+      <rect x="400" y="262" width="110" height="28" rx="7" class="mm-in"/><text x="455" y="280" text-anchor="middle" class="mm-own">Song library</text>
+      <g id="mmBoxes"></g>
+    </svg>
+  </section>
+
+  <section class="panel c4">
+    <h2><span class="dot" id="d_m1"></span>M1 · Audio <span class="tag">bands use adaptive gain</span></h2>
+    <canvas id="spec" height="70"></canvas>
+    <div class="bars" id="bands" style="margin-top:10px"></div>
+    <div class="barlbl"><span>sub</span><span>bass</span><span>low-mid</span><span>mid</span><span>hi-mid</span><span>high</span></div>
+    <div class="kv"><span>level</span><span id="rms">–</span><span>centroid</span><span id="cent">–</span><span>flux</span><span id="flux">–</span></div>
+  </section>
+
+  <section class="panel c4">
+    <h2><span class="dot" id="d_m3"></span>M3 · Rhythm</h2>
+    <div class="row">
+      <div class="big" id="bpm">–<small>BPM</small></div>
+      <div class="beat" id="beat"></div>
+      <svg width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" stroke="#232937" stroke-width="5" fill="none"/><circle id="phase" cx="23" cy="23" r="19" stroke="var(--accent2)" stroke-width="5" fill="none" stroke-dasharray="0 120" transform="rotate(-90 23 23)"/></svg>
+      <span class="flag" id="drop">DROP</span>
+    </div>
+    <div class="kv">
+      <span>tempo confidence</span><div class="hbar"><i id="bconf"></i></div>
+      <span>onset</span><div class="hbar"><i id="onset" style="background:var(--warn)"></i></div>
+      <span>energy trend</span><div class="hbar center"><i id="trend" style="background:var(--ok)"></i></div>
+      <span>beats · onsets</span><span id="counts">–</span>
+    </div>
+  </section>
+
+  <section class="panel c4">
+    <h2><span class="dot" id="d_m5"></span>M5 · Recognition &amp; mood</h2>
+    <div class="row"><span class="chip" id="songState">none</span><span class="note" id="songPos"></span></div>
+    <div class="songname" id="song">–</div>
+    <div class="kv" style="margin-top:0"><span>match confidence</span><div class="hbar"><i id="sconf" style="background:var(--ok)"></i></div>
+      <span>last match</span><span id="matchInfo">–</span></div>
+    <div class="mood" id="mood"><b id="moodDot" style="left:50%;top:50%;opacity:.25"></b>
+      <em style="right:6px;top:50%">happy →</em><em style="left:6px;top:50%">← sad</em><em style="left:52%;top:4px">intense</em><em style="left:52%;bottom:4px">calm</em></div>
+    <div class="note">Mood: placeholder heuristic, to be replaced by a trained model (DEAM).</div>
+  </section>
+
+  <section class="panel c4">
+    <h2><span class="dot ok"></span>M4 · Superposition</h2>
+    <div class="kv" style="margin-top:0">
+      <span>look</span><span id="look">–</span>
+      <span>active preset</span><span id="preset">–</span>
+      <span>preset weight</span><div class="hbar"><i id="pw"></i></div>
+      <span>energy · depth</span><span id="energy">–</span>
+      <span>last transition</span><span id="trans">–</span>
+      <span>strobe accents</span><span id="strobe">–</span>
+      <span>palette now</span><div class="swatches" id="pal"></div>
+    </div>
+  </section>
+
+  <section class="panel c4">
+    <h2>Live controls <span class="tag">→ LiveControls</span></h2>
+    <label class="ctl">master<input type="range" id="master" min="0" max="1" step="0.01"><output id="o_master"></output></label>
+    <label class="ctl">reactivity<input type="range" id="reactivity" min="0" max="1" step="0.01"><output id="o_reactivity"></output></label>
+    <label class="ctl">preset blend<input type="range" id="preset_blend" min="0" max="1" step="0.01"><output id="o_preset_blend"></output></label>
+    <div class="field">look</div><div class="btns" id="looks" style="margin-top:0"></div>
+    <div class="btns">
+      <button class="toggle" id="strobeBtn">strobe accents</button>
+      <button class="danger" id="blackoutBtn">BLACKOUT</button>
+    </div>
+    <div class="field">this song is playing (manual override)
+      <select id="manual"><option value="">auto: use recognition</option></select></div>
+  </section>
+
+  <section class="panel c4">
+    <h2><span class="dot" id="d_src"></span>Input source <span class="tag">M1</span></h2>
+    <div class="btns" id="srcKinds" style="margin-top:0">
+      <button data-k="file">library file</button><button data-k="mic">mic / line-in</button><button data-k="silence">silence</button>
+    </div>
+    <div id="srcFile">
+      <div class="field">audio file<select id="fileSel"></select></div>
+      <div class="field">…or a path on this computer<input type="text" id="filePath" placeholder="/Users/me/Music/track.mp3"></div>
+      <label class="note"><input type="checkbox" id="play" checked> play through the speakers</label>
+    </div>
+    <div id="srcMic" style="display:none"><div class="field">input device<select id="devSel"></select></div>
+      <div class="note">No level? Allow microphone access for your terminal in System Settings → Privacy &amp; Security → Microphone.</div></div>
+    <div class="btns"><button class="primary" id="srcGo">use this input</button></div>
+    <div class="note" id="srcInfo">–</div>
+    <div class="prog"><i id="srcPos" style="background:var(--accent2)"></i></div>
+    <div class="err" id="srcErr"></div>
+  </section>
+
+  <section class="panel c6">
+    <h2>Latency per stage <span class="tag">measured every tick · avg</span></h2>
+    <div class="lat" id="lat"></div>
+    <div class="total">
+      <div><div class="note">estimated sound → light</div><div class="big" id="s2l">–<small>ms</small></div></div>
+      <div><div class="note">processing (M1–M2)</div><div class="big" id="proc" style="font-size:22px">–</div></div>
+      <div><div class="note">beat pulses fired early by</div><div class="big" id="lead" style="font-size:22px">–</div></div>
+      <div class="note" style="max-width:260px">People notice light later than sound beyond ~45 ms (ITU-R BT.1359). Beat prediction hides most of it for steady beats.</div>
+    </div>
+  </section>
+
+  <section class="panel c6">
+    <h2><span class="dot" id="d_m2"></span>M2 · DMX output <span class="tag" id="dmxInfo">–</span></h2>
+    <div class="dmx" id="dmx"></div>
+    <div class="note" id="patchWarn"></div>
+  </section>
+
+  <section class="panel c12">
+    <h2>Song library <span class="tag">presets steer the reactive show: palette, energy, strobe, blend</span></h2>
+    <div class="grid2" style="grid-template-columns:3fr 2fr;gap:22px">
+      <div>
+        <table><thead><tr><th>palette</th><th>song</th><th>energy</th><th>strobe</th><th>blend</th><th>fingerprint</th><th></th></tr></thead><tbody id="lib"></tbody></table>
+        <div class="btns"><button class="primary" id="fpBtn">Fingerprint library</button><span class="note" id="fpMsg"></span></div>
+        <div class="prog"><i id="fpProg"></i></div>
+      </div>
+      <div>
+        <div class="field" style="color:var(--text);font-size:13px;font-weight:600" id="formTitle">Add a song</div>
+        <input type="hidden" id="f_id">
+        <div class="grid2"><div class="field">title<input type="text" id="f_title"></div><div class="field">artist<input type="text" id="f_artist"></div></div>
+        <div class="field">audio file (in library/audio, or any path; copied into the library)
+          <select id="f_fileSel"></select><input type="text" id="f_path" placeholder="or paste a path: /Users/me/Music/track.mp3"></div>
+        <div class="field">palette (2–3 colours)
+          <div class="row"><input type="color" id="f_c1" value="#ff2a6d"><input type="color" id="f_c2" value="#05d9e8"><input type="color" id="f_c3" value="#7b2fff"><label class="note"><input type="checkbox" id="f_use3" checked> use 3rd</label></div></div>
+        <label class="ctl">energy<input type="range" id="f_energy" min="0" max="1" step="0.05" value="0.7"><output id="o_f_energy">0.70</output></label>
+        <label class="ctl">blend<input type="range" id="f_blend" min="0" max="1" step="0.05" value="0.8"><output id="o_f_blend">live</output></label>
+        <div class="row"><label class="note"><input type="checkbox" id="f_blendLive" checked> use the live blend slider</label><label class="note"><input type="checkbox" id="f_strobe"> strobe accents allowed</label></div>
+        <div class="btns"><button class="primary" id="f_save">Save song</button><button id="f_new">New</button></div>
+        <div class="err" id="f_err"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="conn">disconnected · retrying…</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let ws, hello = null, fileTouched = false, lastBeats = -1, lastDrops = -1, srcKind = 'file', lastState = null;
+const MODULES = [
+  {id:'m1', x:10,  y:115, w:140, t:'M1 · Audio',         o:'Signal Processing · Youtso'},
+  {id:'m3', x:190, y:20,  w:150, t:'M3 · Rhythm',        o:'Rhythm & Tempo · TBD'},
+  {id:'m5', x:190, y:210, w:150, t:'M5 · Recognition',   o:'ML: Mood + recognition · TBD'},
+  {id:'m4', x:380, y:115, w:150, t:'M4 · Superposition', o:'Superposition · Sathvik'},
+  {id:'m2', x:560, y:115, w:130, t:'M2 · Lighting',      o:'Lighting & LED · Mo'},
+];
+function buildMap(){
+  const g = $('mmBoxes'); let h = '';
+  for (const m of MODULES){
+    const w = m.w || 122;
+    h += `<g><rect x="${m.x}" y="${m.y}" width="${w}" height="70" rx="9" class="mm-box live"/>
+      <circle cx="${m.x+12}" cy="${m.y+15}" r="4.5" id="mm_dot_${m.id}" fill="#5b6377"/>
+      <text x="${m.x+22}" y="${m.y+19}" class="mm-title">${m.t}</text>
+      <text x="${m.x+8}" y="${m.y+34}" class="mm-own">${m.o}</text>
+      <text x="${m.x+8}" y="${m.y+50}" class="mm-sum" id="mm_sum_${m.id}">–</text>
+      <text x="${m.x+8}" y="${m.y+63}" class="mm-ms" id="mm_ms_${m.id}"></text></g>`;
+  }
+  g.innerHTML = h;
+}
+function fit(s, n){ s = String(s||''); return s.length > n ? s.slice(0, n-1) + '…' : s; }
+
+function connect(){
+  ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.onopen = () => $('conn').style.display = 'none';
+  ws.onclose = () => { $('conn').style.display = 'block'; setTimeout(connect, 1000); };
+  ws.onmessage = ev => {
+    const m = JSON.parse(ev.data);
+    if (m.type === 'hello') onHello(m);
+    else if (m.type === 'state') onState(m);
+    else if (m.type === 'error') { $('f_err').textContent = m.message; $('srcErr').textContent = m.message; }
+  };
+}
+function send(o){ if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); }
+
+function onHello(h){
+  hello = h;
+  $('pVer').textContent = h.contract_version;
+  // fixtures
+  const st = $('stage'); st.innerHTML = '';
+  h.patch.forEach((f,i) => st.insertAdjacentHTML('beforeend',
+    `<div class="fx"><div class="lamp" id="lamp${i}"></div><small>${f.name}</small><small>${f.address ? 'DMX ' + f.address : 'preview'}</small></div>`));
+  $('fxCount').textContent = `${h.patch.length} fixtures · ${h.patch[0] ? h.patch[0].profile : ''}`;
+  $('patchWarn').textContent = (h.patch_warnings||[]).length ? 'Patch: ' + h.patch_warnings[0] + (h.patch_warnings.length > 1 ? ` (+${h.patch_warnings.length-1} more)` : '') + '. Confirm with tools/dmx_test.py walk.' : '';
+  // looks
+  const lk = $('looks'); lk.innerHTML = '';
+  h.looks.forEach(l => { const b = document.createElement('button'); b.textContent = l; b.dataset.look = l;
+    b.onclick = () => send({cmd:'controls', values:{look:l}}); lk.appendChild(b); });
+  // devices
+  $('devSel').innerHTML = h.devices.map(d => `<option value="${d.index}" ${d.default?'selected':''}>${d.name} (${d.channels} ch)</option>`).join('');
+  // files
+  const opts = h.audio_files.map(f => `<option value="${f}">${f.split('/').pop()}</option>`).join('');
+  $('fileSel').innerHTML = opts; $('f_fileSel').innerHTML = '<option value="">(choose a file)</option>' + opts;
+  // manual song picker + library table
+  const cur = $('manual').value;
+  $('manual').innerHTML = '<option value="">auto: use recognition</option>' + h.library.map(s => `<option value="${s.song_id}">${s.title}</option>`).join('');
+  $('manual').value = cur;
+  $('lib').innerHTML = h.library.map(s => `<tr>
+      <td><div class="swatches">${s.palette.map(c => `<div class="sw" style="background:${c}"></div>`).join('')}</div></td>
+      <td>${s.title}<div class="mini">${s.artist || ''} ${s.audio_file ? '· ' + s.audio_file.split('/').pop() : '· no audio'}</div></td>
+      <td>${s.energy.toFixed(2)}</td><td>${s.strobe ? 'yes' : '–'}</td><td>${s.blend == null ? 'live' : s.blend.toFixed(2)}</td>
+      <td>${h.fingerprinted[s.song_id] ? '<span class="ok">✓ indexed</span>' : (s.audio_file ? '<span class="warn">needs fingerprint</span>' : '<span class="mini">no audio</span>')}</td>
+      <td style="white-space:nowrap"><button data-edit="${s.song_id}">edit</button> <button data-del="${s.song_id}">✕</button></td></tr>`).join('');
+  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editSong(b.dataset.edit));
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { if (confirm('Remove this song from the library? (the audio file stays on disk)')) send({cmd:'delete_song', song_id:b.dataset.del}); });
+}
+
+function setBar(id, v){ $(id).style.width = (Math.max(0, Math.min(1, v)) * 100) + '%'; }
+function onState(s){
+  if (!s.ready) return;
+  lastState = s;
+  // header
+  const src = s.source || {};
+  $('pSrc').textContent = src.kind === 'file' ? fit(src.name, 26) : src.kind === 'mic' ? fit(src.name, 26) : (src.kind || '–');
+  $('pSrcDot').className = 'dot ' + (s.audio.rms_db > -60 ? 'ok' : 'warn');
+  $('pDmx').textContent = s.dmx.state + (s.dmx.port ? ' ' + s.dmx.port.replace('/dev/cu.','') : '');
+  $('pDmxDot').className = 'dot ' + (s.dmx.state === 'connected' ? 'ok' : s.dmx.state === 'disabled' ? '' : 'warn');
+  $('pFps').textContent = s.fps.toFixed(0);
+  // stage
+  s.fixtures.forEach((f,i) => { const el = $('lamp'+i); if (!el) return;
+    el.style.background = f.hex; el.style.boxShadow = `0 0 ${10 + 50*f.dimmer}px ${8*f.dimmer}px ${f.colour}${Math.round(f.dimmer*170).toString(16).padStart(2,'0')}`; });
+  $('layers').textContent = s.intent_source;
+  const capOn = s.m4.safety_cap_engaged > 0;
+  $('cap').className = 'cap' + (capOn ? ' on' : ''); $('cap').textContent = capOn ? 'safety cap: HOLDING (max 3 flashes/s)' : 'safety cap: idle (max 3 flashes/s)';
+  // module map
+  for (const k of ['m1','m2','m3','m4','m5']){ const m = s.modules[k];
+    $('mm_dot_'+k).setAttribute('fill', m.ok ? '#33d17a' : '#f5b041');
+    $('mm_sum_'+k).textContent = fit(m.summary, k === 'm2' ? 20 : k === 'm1' ? 21 : 23);
+    $('mm_ms_'+k).textContent = m.ms.toFixed(2) + ' ms / tick';
+    const d = $('d_'+k); if (d) d.className = 'dot ' + (m.ok ? 'ok' : 'warn'); }
+  // M1
+  const b = s.audio.bands, keys = ['sub','bass','low_mid','mid','high_mid','high'];
+  keys.forEach((k,i) => $('band'+i).style.height = (b[k]*100) + '%');
+  $('rms').textContent = s.audio.rms_db.toFixed(1) + ' dBFS'; $('cent').textContent = s.audio.centroid + ' Hz'; $('flux').textContent = s.audio.flux.toFixed(4);
+  drawSpec(s.audio.spectrum);
+  // M3
+  const r = s.rhythm;
+  $('bpm').innerHTML = (r.bpm ? r.bpm.toFixed(1) : '–') + '<small>BPM</small>';
+  setBar('bconf', r.confidence); setBar('onset', r.onset);
+  const tr = $('trend'); tr.style.width = Math.abs(r.trend)*50 + '%'; tr.style.left = r.trend >= 0 ? '50%' : (50 - Math.abs(r.trend)*50) + '%'; tr.style.background = r.trend >= 0 ? 'var(--ok)' : 'var(--accent2)';
+  $('counts').textContent = `${r.beats} · ${r.onsets}`;
+  $('phase').setAttribute('stroke-dasharray', `${(r.phase*119.4).toFixed(1)} 120`);
+  if (r.beats !== lastBeats){ if (lastBeats >= 0){ const e = $('beat'); e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 70);} lastBeats = r.beats; }
+  if (r.drops !== lastDrops){ if (lastDrops >= 0){ const e = $('drop'); e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 900);} lastDrops = r.drops; }
+  // M5
+  const mu = s.music, m4 = s.m4, det = mu.detail || {};
+  const state = m4.song_state || 'none';
+  $('songState').className = 'chip ' + state; $('songState').textContent = 'M4: ' + state;
+  $('song').textContent = mu.title || (m4.preset_title ? m4.preset_title + ' (held)' : 'no song recognised');
+  setBar('sconf', mu.confidence);
+  $('matchInfo').textContent = det.matches ? `score ${det.last_score} vs ${det.runner_up_score} · ${det.match_ms} ms` : (det.indexed_songs ? 'waiting for audio' : 'index empty');
+  $('songPos').textContent = det.song_position_s != null ? `at ${Math.floor(det.song_position_s/60)}:${String(Math.floor(det.song_position_s%60)).padStart(2,'0')} in the song` : '';
+  const md = $('moodDot');
+  if (mu.valence != null){ md.style.left = (50 + mu.valence*45) + '%'; md.style.top = (50 - mu.arousal*45) + '%'; md.style.opacity = 1; } else md.style.opacity = .25;
+  // M4
+  $('look').textContent = m4.look + (m4.look_mode === 'auto' ? ' (auto)' : '');
+  $('preset').textContent = m4.preset_title || '–';
+  setBar('pw', m4.preset_weight);
+  $('energy').textContent = `${m4.energy} · ${m4.depth}`;
+  $('trans').textContent = m4.transition || '–';
+  $('strobe').textContent = m4.strobe_permitted ? `allowed · ${m4.accents} fired` : 'off';
+  $('pal').innerHTML = (m4.palette||[]).map(c => `<div class="sw" style="background:${c}"></div>`).join('');
+  // controls (do not fight the user's hand)
+  const c = s.controls;
+  for (const k of ['master','reactivity','preset_blend']){ const el = $(k); if (document.activeElement !== el) el.value = c[k]; $('o_'+k).textContent = (+c[k]).toFixed(2); }
+  document.querySelectorAll('#looks button').forEach(bt => bt.classList.toggle('sel', bt.dataset.look === c.look));
+  $('strobeBtn').classList.toggle('sel', c.strobe_enabled); $('blackoutBtn').classList.toggle('sel', c.blackout);
+  if (document.activeElement !== $('manual')) $('manual').value = c.manual_song_id || '';
+  // source (point the file picker at what is playing, until the user touches it)
+  if (src.kind === 'file' && !fileTouched){ const f = (hello ? hello.audio_files : []).find(x => x.split('/').pop() === src.name); if (f) $('fileSel').value = f; }
+  $('srcInfo').textContent = src.kind === 'file' ? `${src.name} · ${src.position_s}/${src.duration_s} s · output: ${src.output}${src.device_latency_ms ? ' (' + src.device_latency_ms + ' ms buffer)' : ''}`
+      : src.kind === 'mic' ? `${src.name}${src.device_latency_ms ? ' · ' + src.device_latency_ms + ' ms buffer' : ''}` : 'silence (idle glow)';
+  setBar('srcPos', src.kind === 'file' && src.duration_s ? src.position_s / src.duration_s : 0);
+  $('srcErr').textContent = src.error || src.opening || '';
+  $('d_src').className = 'dot ' + (s.audio.rms_db > -60 ? 'ok' : 'warn');
+  // latency
+  const L = s.latency, mx = Math.max(25, ...L.stages.map(x => x[1]));
+  $('lat').innerHTML = L.stages.map(([n,v]) => `<span>${n}</span><div class="hbar"><i style="width:${Math.min(100, v/mx*100)}%"></i></div><span class="v">${v < 1 ? v.toFixed(2) : v.toFixed(1)} ms</span>`).join('');
+  $('s2l').innerHTML = `${L.sound_to_light_ms.toFixed(0)}<small>ms</small>`; $('s2l').style.color = L.sound_to_light_ms - L.beat_lead_ms <= 45 ? 'var(--ok)' : 'var(--warn)';
+  $('proc').textContent = L.processing_ms.toFixed(2) + ' ms'; $('lead').textContent = L.beat_lead_ms + ' ms';
+  // DMX
+  const fxStarts = new Set((hello ? hello.patch : []).map(f => f.address));
+  $('dmx').innerHTML = s.universe.map((v,i) => `<div class="${v ? 'hot' : ''} ${fxStarts.has(i+1) ? 'start' : ''}" title="channel ${i+1}">${v}</div>`).join('');
+  $('dmxInfo').textContent = s.dmx.state === 'connected' ? `${s.dmx.port} · ${s.dmx.frames_sent} frames · ${s.dmx.fps} fps` : s.dmx.state === 'disabled' ? 'off (--no-dmx) · preview only' : 'no cable found · preview only · plug in to start';
+  // fingerprint job
+  const ix = s.index; $('fpBtn').disabled = ix.running;
+  $('fpMsg').textContent = ix.error ? 'error: ' + ix.error : ix.message; $('fpProg').style.width = (ix.progress*100) + '%';
+}
+
+function drawSpec(sp){
+  const cv = $('spec'), ctx = cv.getContext('2d'); const W = cv.width = cv.clientWidth * devicePixelRatio, H = cv.height = 70 * devicePixelRatio;
+  ctx.clearRect(0,0,W,H); if (!sp || !sp.length) return;
+  const bw = W / sp.length; const g = ctx.createLinearGradient(0,H,0,0); g.addColorStop(0,'#8b6cff'); g.addColorStop(1,'#3ec6ff'); ctx.fillStyle = g;
+  sp.forEach((v,i) => { const h = v*H; ctx.fillRect(i*bw+1, H-h, bw-2, h); });
+}
+
+// ---------- controls
+for (const k of ['master','reactivity','preset_blend']){
+  $(k).addEventListener('input', e => { $('o_'+k).textContent = (+e.target.value).toFixed(2); send({cmd:'controls', values:{[k]: +e.target.value}}); });
+}
+$('strobeBtn').onclick = () => send({cmd:'controls', values:{strobe_enabled: !(lastState && lastState.controls.strobe_enabled)}});
+$('blackoutBtn').onclick = () => send({cmd:'controls', values:{blackout: !(lastState && lastState.controls.blackout)}});
+$('manual').onchange = e => send({cmd:'select_song', song_id: e.target.value || null});
+document.addEventListener('keydown', e => { if (e.target.tagName === 'INPUT') return; if (e.key === 'b') $('blackoutBtn').click(); });
+
+// ---------- source
+function showSrc(k){ srcKind = k; document.querySelectorAll('#srcKinds button').forEach(b => b.classList.toggle('sel', b.dataset.k === k));
+  $('srcFile').style.display = k === 'file' ? '' : 'none'; $('srcMic').style.display = k === 'mic' ? '' : 'none'; }
+document.querySelectorAll('#srcKinds button').forEach(b => b.onclick = () => showSrc(b.dataset.k));
+$('srcGo').onclick = () => {
+  if (srcKind === 'file') send({cmd:'source', kind:'file', path: $('filePath').value.trim() || $('fileSel').value, play: $('play').checked});
+  else if (srcKind === 'mic') send({cmd:'source', kind:'mic', device: +$('devSel').value});
+  else send({cmd:'source', kind:'silence'});
+};
+showSrc('file');
+$('fileSel').addEventListener('change', () => fileTouched = true);
+
+// ---------- library editor
+$('f_energy').oninput = e => $('o_f_energy').textContent = (+e.target.value).toFixed(2);
+const blendOut = () => $('o_f_blend').textContent = $('f_blendLive').checked ? 'live' : (+$('f_blend').value).toFixed(2);
+$('f_blend').oninput = () => { $('f_blendLive').checked = false; blendOut(); }; $('f_blendLive').onchange = blendOut;
+function clearForm(){ $('f_id').value=''; $('f_title').value=''; $('f_artist').value=''; $('f_path').value=''; $('f_fileSel').value='';
+  $('f_energy').value=0.7; $('o_f_energy').textContent='0.70'; $('f_blendLive').checked=true; blendOut(); $('f_strobe').checked=false; $('formTitle').textContent='Add a song'; $('f_err').textContent=''; }
+function editSong(id){
+  const s = hello.library.find(x => x.song_id === id); if (!s) return;
+  $('f_id').value = s.song_id; $('f_title').value = s.title; $('f_artist').value = s.artist || '';
+  const inLib = hello.audio_files.includes(s.audio_file); $('f_fileSel').value = inLib ? s.audio_file : ''; $('f_path').value = inLib ? '' : (s.audio_file || '');
+  $('f_c1').value = s.palette[0] || '#ffffff'; $('f_c2').value = s.palette[1] || s.palette[0]; $('f_use3').checked = s.palette.length > 2; if (s.palette[2]) $('f_c3').value = s.palette[2];
+  $('f_energy').value = s.energy; $('o_f_energy').textContent = s.energy.toFixed(2);
+  $('f_blendLive').checked = s.blend == null; if (s.blend != null) $('f_blend').value = s.blend; blendOut();
+  $('f_strobe').checked = s.strobe; $('formTitle').textContent = 'Edit: ' + s.title; $('f_err').textContent = '';
+}
+$('f_new').onclick = clearForm;
+$('f_save').onclick = () => {
+  const pal = [$('f_c1').value, $('f_c2').value]; if ($('f_use3').checked) pal.push($('f_c3').value);
+  const song = { title: $('f_title').value, artist: $('f_artist').value, audio_file: $('f_path').value.trim() || $('f_fileSel').value || null,
+    palette: pal, energy: +$('f_energy').value, strobe: $('f_strobe').checked, blend: $('f_blendLive').checked ? null : +$('f_blend').value };
+  if ($('f_id').value) song.song_id = $('f_id').value;
+  if (!song.title.trim()){ $('f_err').textContent = 'Give the song a title.'; return; }
+  $('f_err').textContent = ''; send({cmd:'save_song', song}); clearForm();
+};
+$('fpBtn').onclick = () => send({cmd:'fingerprint'});
+
+// ---------- boot
+(function(){ const bb = $('bands'); for (let i=0;i<6;i++) bb.insertAdjacentHTML('beforeend', `<div class="bar"><i id="band${i}"></i></div>`); })();
+buildMap();
+connect();
+</script>
+</body>
+</html>

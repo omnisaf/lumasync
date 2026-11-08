@@ -1,0 +1,14 @@
+{
+  "_comment": "The rig: which logical fixture (as M4 numbers them, 0..n-1) is which real light. One patch file per rig. address = DMX start channel (1-512), or null for a preview-only fixture. Default: 8 LPC1818 pars at the venue's addresses 1, 11, ... 71. Edit to match the real lights; set each light's address on its own menu.",
+  "universe": 1,
+  "fixtures": [
+    {"name": "Par 1", "profile": "betopper_lpc1818_7ch_guess", "address": 1},
+    {"name": "Par 2", "profile": "betopper_lpc1818_7ch_guess", "address": 11},
+    {"name": "Par 3", "profile": "betopper_lpc1818_7ch_guess", "address": 21},
+    {"name": "Par 4", "profile": "betopper_lpc1818_7ch_guess", "address": 31},
+    {"name": "Par 5", "profile": "betopper_lpc1818_7ch_guess", "address": 41},
+    {"name": "Par 6", "profile": "betopper_lpc1818_7ch_guess", "address": 51},
+    {"name": "Par 7", "profile": "betopper_lpc1818_7ch_guess", "address": 61},
+    {"name": "Par 8", "profile": "betopper_lpc1818_7ch_guess", "address": 71}
+  ]
+}

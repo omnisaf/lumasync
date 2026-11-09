@@ -68,6 +68,22 @@ Mood is at most a placeholder so far; the real model is this module's work. See 
 A mood model trained on DEAM, with a results table for clean audio vs recorded mic audio. A
 recognition test on a small library: accuracy and time-to-identify, mic vs line-in.
 
+## Research vs the prototype
+
+Research: [research/ml-music-mood-to-light.md](research/ml-music-mood-to-light.md) (Rohan, Nov 2026).
+
+**Already agrees:**
+- Arousal and valence as two continuous outputs, not genre classes. The contract already has `MusicContext.valence` and `MusicContext.arousal`.
+- Mood as a slow layer on the laptop that never blocks the beat path. In the prototype, mood is a placeholder heuristic in `mood.py` ([decision 110](../../decisions/110-m5-mood-placeholder.md)). The trained model replaces it.
+- Valence shifts the hue warm or cool, and arousal sets saturation and brightness. The prototype's M4 already uses mood this way.
+
+**Conflicts to settle (these need the contract process, and the research's own questions 1–3 cover them):**
+- **Scale.** The research proposes 0 to 1. The contract uses −1 to 1. Pick one. Changing the contract means a PR that every owner approves.
+- **Confidence `c`.** The research sends a mood confidence. `MusicContext` has `song_confidence` but no mood confidence yet. Add an optional `mood_confidence` field.
+- **Who turns mood into colour.** The research proposes the lighting module. In this architecture, M4 (superposition) turns every layer into colour, and M2 only maps colour to DMX channels. Agree with Sathvik (M4) and Mo (M2) at the next meeting.
+- **Audio hand-off rate.** 22.05 kHz from M1, or resample inside M5? Agree with Youtso (M1).
+- **Song recognition.** The prototype also puts audio fingerprinting in this module. Decide whether it stays here, and whether the module name changes ([decision 109](../../decisions/109-m5-recognition-confidence-and-schedule.md)).
+
 ## Open decisions for the owner
 
 1. Module name and scope (team decision, `decisions/007`).

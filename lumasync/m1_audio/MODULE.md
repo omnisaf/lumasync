@@ -60,6 +60,22 @@ centroid and flux. It is a starting point, not a design. See the code for detail
 `AudioFrame` streams from both mic and line-in, with a short comparison: noise floor, band
 stability on a steady passage, flux peaks on drum hits, and processing time per block.
 
+## Research vs the prototype
+
+Research: [research/signal-processing-research.md](research/signal-processing-research.md) (Youtso, Nov 2026).
+
+**Already agrees:**
+- 44.1 kHz, Python on the laptop, `.wav` files first then live input: the prototype does the same (`--source file`, then `--source mic`).
+- FFT of 2048 samples with a Hann window: the prototype uses a 2048-sample Hann window, sliding 1024 samples per tick (50 % overlap). See [decision 104](../../decisions/104-m1-features-and-agc.md).
+- RMS, spectral centroid, spectral flux and band energies are all in `AudioFrame` today.
+- Line-in as primary, mic as backup: matches the baseline's input order.
+
+**Open, for the owner to decide (each is a good decision record):**
+- **Buffering.** The research recommends a ring buffer over double buffering. The prototype hands blocks through a queue between threads ([decision 101](../../decisions/101-app-threading-model.md)). Is that good enough, or should capture write into a ring buffer? Measure the backlog under load to decide.
+- **Window and hop.** 2048 / 1024 gives ~21.5 Hz bins and ~23 ms per tick. Is that the right time-frequency trade-off for beats *and* bass? Test 1024 and 4096 against the same tracks.
+- **Roll-off and zero-crossing rate.** Marked optional in the research. M5 (Rohan's research) wants them for mood. Adding them is an optional contract field: a small change, but it goes through the contract process.
+- **Sample-rate hand-off to M5.** M5's research asks whether M1 should give it a 22.05 kHz mono stream or let M5 resample. Agree this with Rohan.
+
 ## Open decisions for the owner
 
 1. Band edges for the six bands.

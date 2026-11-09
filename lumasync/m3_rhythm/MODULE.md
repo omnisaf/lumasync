@@ -57,6 +57,21 @@ See the code for details.
 A live tracker running on recorded tracks, with a results table against ground truth: beat
 error, lock time, tempo accuracy, and the delay between the real beat and `beat = True`.
 
+## Research vs the prototype
+
+Research: [research/rhythm-tempo-transient-research.md](research/rhythm-tempo-transient-research.md) (Remsha, Nov 2026).
+
+**Already agrees:**
+- Spectral flux as the onset detection function, with an adaptive threshold built on the moving median and a minimum gap between hits. The prototype uses median + k × mean absolute deviation over the last 0.5 s and a 100 ms gap ([decision 105](../../decisions/105-m3-onset-detection.md)).
+- Tempo by autocorrelation of the onset curve, with a confidence value ([decision 106](../../decisions/106-m3-tempo-and-beat-tracking.md)).
+- Beat prediction so lights fire early, on the beat. The prototype fires beat pulses ~40 ms early to hide output latency.
+
+**Open, for the owner to decide:**
+- **Band split for drum types (kick 60–250 Hz vs snare/hats 2 kHz+).** Not in the prototype. It needs new optional fields in `RhythmState` (for example `kick` and `snare` onset strengths), so it goes through the contract process. A strong report item.
+- **Low-confidence fallback for ballads.** The research says: when confidence is low, stop following beats and use slow transitions. `RhythmState.confidence` already exists. Agree with Sathvik (M4) who acts on it: M3 reports, M4 decides.
+- **Which onset function.** The research's comparison table (energy, HFC, flux, SuperFlux, phase deviation) is the decision record waiting to be written. Measure on beat-annotated tracks with `mir_eval`.
+- **Benchmarks.** madmom (offline) and BTrack as references, aubio as a real-time check: pick the comparison set for the report.
+
 ## Open decisions for the owner
 
 1. Method: flux + autocorrelation, dynamic programming (Ellis 2007), or an online neural tracker

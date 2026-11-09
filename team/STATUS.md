@@ -12,7 +12,15 @@ a merge conflict in this file, keep both sides.
 
 - **2026-11-08** · Repo set up; first shown to the team on Nov 9. The prototype runs end to end as a first draft built
   for the team. Each module's real work starts now.
-- **Open:** owners for modules 3 and 5, and module 5's name. Settle at the first team session.
+- **2026-11-09** · Research from Drive added to M1, M3 and M5 (`lumasync/m*/research/`). Each
+  MODULE.md now has a "Research vs the prototype" section. Module 2 has no research doc yet.
+- **Conflict (M5 ↔ contract, M4, M2):** mood scale 0–1 (M5 research) vs −1–1 (contract); add a mood
+  confidence field; who maps mood to colour (M4 or M2). Needs a contract PR.
+- **Conflict (M1 ↔ M5):** sample rate for M5 (22.05 kHz from M1, or M5 resamples).
+- **Proposal (M3 → contract):** kick/snare onset fields in `RhythmState` for drum-type looks.
+- **Report fixes (from M5 research):** drop "genre → colour" from the abstract; the proposal's
+  reference list is off by one from in-text [5] to [16], [16] = [19], and [38] = [23].
+- **Settled 2026-11-09:** Remsha owns module 3, Rohan owns module 5. Still open: module 5's name.
 - **Open:** the DMX cable has not been tested on a light yet. A Resonnce test date is needed.
 - **Watch:** the promised MIDI layer will need a contract change (`LiveControls` says "MIDI later").
   Affects modules 4 and 2.

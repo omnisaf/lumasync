@@ -1,6 +1,6 @@
 # Module 3 — Rhythm, Tempo and Transient Detection
 
-**Owner:** Rohan or Remsha (to confirm) · **Folder:** `lumasync/m3_rhythm/` · **Decision records:** 400–499
+**Owner:** Remsha · **Folder:** `lumasync/m3_rhythm/` · **Decision records:** 400–499
 
 ## The question this module answers
 

@@ -38,9 +38,9 @@ The modules were assigned in our proposal. Confirm or re-assign each one now. Fi
 |---|---|---|
 | 1 | Signal Processing of Audio | Youtso |
 | 2 | Real-Time Adaptive Lighting Control and LED Interface | Mo |
-| 3 | Rhythm, Tempo and Transient Detection | Rohan or Remsha |
+| 3 | Rhythm, Tempo and Transient Detection | Remsha |
 | 4 | Superposition of Inputs and Latency Optimization | Sathvik |
-| 5 | Machine Learning: Mood and Crowd-Energy Estimation | Rohan or Remsha |
+| 5 | Machine Learning: Mood and Crowd-Energy Estimation | Rohan |
 
 Two things to settle:
 

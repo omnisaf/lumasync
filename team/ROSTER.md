@@ -8,8 +8,8 @@ name your git uses if it differs.
 |---|---|---|---|---|---|
 | Tenzin Youtso | | | 1 · Signal Processing of Audio | `lumasync/m1_audio` | proposed |
 | Muhammad Elahi (Mo) | | | 2 · Real-Time Adaptive Lighting Control and LED Interface | `lumasync/m2_lighting` | proposed |
-| Rohan Chandan | | | 3 or 5 (to confirm) | `lumasync/m3_rhythm` or `lumasync/m5_recognition` | proposed |
-| Remsha Akbar Hussain | | | 3 or 5 (to confirm) | `lumasync/m3_rhythm` or `lumasync/m5_recognition` | proposed |
+| Rohan Chandan | | | 5 · Machine Learning: Mood and Crowd-Energy Estimation | `lumasync/m5_recognition` | confirmed |
+| Remsha Akbar Hussain | | | 3 · Rhythm, Tempo and Transient Detection | `lumasync/m3_rhythm` | confirmed |
 | Sathvik Chandrasekaran | | | 4 · Superposition of Inputs and Latency Optimization | `lumasync/m4_superposition` | proposed |
 
 **Status:** `proposed` = from the proposal report, not yet confirmed by the team.

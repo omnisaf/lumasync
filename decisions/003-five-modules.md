@@ -31,9 +31,9 @@ Option 3.
 |---|---|---|---|---|
 | 1 | Signal Processing of Audio | *What* is in the sound: capture, conditioning, FFT, frequency bands. Mic vs line-in. | Youtso | Recorded audio files |
 | 2 | Real-Time Adaptive Lighting Control and LED Interface | How lighting intent becomes real light: DMX and LED strips. Later: one show on any rig. | Mo | Fake `LightIntent` |
-| 3 | Rhythm, Tempo and Transient Detection | *When* things happen: beat, tempo, onsets, drops. M1 is frequency; M3 is time. | Rohan or Remsha | Beat-annotated audio |
+| 3 | Rhythm, Tempo and Transient Detection | *When* things happen: beat, tempo, onsets, drops. M1 is frequency; M3 is time. | Remsha | Beat-annotated audio |
 | 4 | Superposition of Inputs and Latency Optimization | How layers combine without wrecking the output, fast enough to look in time. | Sathvik | Fake features + a MIDI controller |
-| 5 | Machine Learning: Mood and Crowd-Energy Estimation | What the music feels like (valence, arousal); add-on: crowd energy from a camera. | Rohan or Remsha | Public labelled mood datasets |
+| 5 | Machine Learning: Mood and Crowd-Energy Estimation | What the music feels like (valence, arousal); add-on: crowd energy from a camera. | Rohan | Public labelled mood datasets |
 
 The shared format is `lumasync/contract.py`. See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md).
 

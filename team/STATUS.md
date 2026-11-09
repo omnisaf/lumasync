@@ -41,7 +41,7 @@ a merge conflict in this file, keep both sides.
 
 ---
 
-## Rohan · Module 3 or 5 (to confirm)
+## Rohan · Module 5
 
 - **My one-liner:** takes in … , gives out … , my first test is …
 - **Working on:** onboarding.
@@ -52,7 +52,7 @@ a merge conflict in this file, keep both sides.
 
 ---
 
-## Remsha · Module 3 or 5 (to confirm)
+## Remsha · Module 3
 
 - **My one-liner:** takes in … , gives out … , my first test is …
 - **Working on:** onboarding.

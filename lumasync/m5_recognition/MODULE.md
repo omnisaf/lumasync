@@ -1,6 +1,6 @@
 # Module 5 — Machine Learning: Mood and Crowd-Energy Estimation
 
-**Owner:** Rohan or Remsha (to confirm) · **Folder:** `lumasync/m5_recognition/` · **Decision records:** 600–699
+**Owner:** Rohan · **Folder:** `lumasync/m5_recognition/` · **Decision records:** 600–699
 
 **Name under review.** Song recognition lives here in the prototype. The team may rename this
 module "Machine Learning: Music Recognition and Mood Estimation". See

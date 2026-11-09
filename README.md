@@ -16,6 +16,12 @@ good job on its own.
 The first step is plain: connect a laptop to real **DMX** lights (DMX is the standard cable signal
 that tells stage lights what to do) and make them react to the music.
 
+**Why build it this way?** Software is changing. Writing code is no longer the slow, expensive
+part of making software. That means it is now easy to build a solution that fits one venue, one
+DJ or one night, instead of one product for everyone. LumaSync is our take on that: modularity,
+unleashed for engineers. Jobs that used to be big, like adding a new input, a new kind of light, or
+a custom look for one song, become small changes.
+
 The part we care most about is how the system is built. It is **modular on both ends**:
 
 - **Any input can be layered on top.** A laptop mic, a clean line from the DJ mixer, DJ controls
@@ -61,9 +67,9 @@ and test in parallel.
 |---|---|---|---|---|
 | 1 | Signal Processing of Audio | Youtso | [`lumasync/m1_audio`](lumasync/m1_audio/MODULE.md) | `AudioFrame` |
 | 2 | Real-Time Adaptive Lighting Control and LED Interface | Mo | [`lumasync/m2_lighting`](lumasync/m2_lighting/MODULE.md) | DMX / light output |
-| 3 | Rhythm, Tempo and Transient Detection | Rohan or Remsha (to confirm) | [`lumasync/m3_rhythm`](lumasync/m3_rhythm/MODULE.md) | `RhythmState` |
+| 3 | Rhythm, Tempo and Transient Detection | Remsha | [`lumasync/m3_rhythm`](lumasync/m3_rhythm/MODULE.md) | `RhythmState` |
 | 4 | Superposition of Inputs and Latency Optimization | Sathvik | [`lumasync/m4_superposition`](lumasync/m4_superposition/MODULE.md) | `LightIntent` |
-| 5 | Machine Learning: Mood and Crowd-Energy Estimation (name under review) | Rohan or Remsha (to confirm) | [`lumasync/m5_recognition`](lumasync/m5_recognition/MODULE.md) | `MusicContext` |
+| 5 | Machine Learning: Mood and Crowd-Energy Estimation (name under review) | Rohan | [`lumasync/m5_recognition`](lumasync/m5_recognition/MODULE.md) | `MusicContext` |
 
 Owners are confirmed in [team/ROSTER.md](team/ROSTER.md). How the pieces connect:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

@@ -17,6 +17,22 @@ So most small events run their lights on a fixed loop, or on a **sound-active** 
 inside each light that makes it jump through canned patterns when it hears bass). The lights and
 the music run side by side, but they are not connected.
 
+## Why now
+
+Software is changing. Writing code used to be the slow, expensive part of building software.
+With today's AI tools it is quickly becoming a small cost. When building the software stops
+being the hard part, it becomes easy to make a solution for one specific person, venue or night,
+instead of one product that has to fit everyone.
+
+LumaSync is built for that world. It is a set of small parts with a strict contract between them,
+so any part can be swapped, extended or rebuilt for one use. Things that used to take a team
+weeks, like supporting a new fixture, adding a new input, or designing a look for a single song,
+become small, quick changes.
+
+The hard part moves. It is no longer writing the code. It is the engineering judgement: what to
+build, how the parts fit together, and how we prove it works. That judgement is what each of us
+owns in this project.
+
 ## What exists, and the gap
 
 Existing products fall into two groups ([docs/RESEARCH.md](RESEARCH.md) has the detail):
